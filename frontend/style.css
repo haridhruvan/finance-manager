@@ -1,0 +1,33 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              url("https://images.unsplash.com/photo-1526304640581-d334cdbbf45e");
+  background-size: cover;
+  color: white;
+}
+
+.container {
+  width: 300px;
+  margin: 100px auto;
+  padding: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+}
+
+button {
+  background: #00bcd4;
+  color: white;
+  cursor: pointer;
+}
+
+.dark {
+  background: #1e1e1e;
+}
