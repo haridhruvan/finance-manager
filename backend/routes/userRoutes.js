@@ -1,48 +1,87 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
+const User = require("../models/user"); // make sure file name is 'user.js'
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// REGISTER
+
+// ======================
+// 🟢 REGISTER USER
+// ======================
 router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  const existingUser = await User.findOne({ email });
-  if (existingUser)
-    return res.status(400).json({ message: "User already exists" });
+    // 1. Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    // 2. Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-  const user = new User({
-    name,
-    email,
-    password: hashedPassword,
-  });
+    // 3. Create user
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
 
-  await user.save();
+    // 4. Save to DB
+    const savedUser = await newUser.save();
 
-  res.json({ message: "User registered successfully" });
+    res.status(201).json(savedUser);
+
+  } catch (error) {
+    console.error("Register Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// LOGIN
+
+// ======================
+// 🔵 LOGIN USER
+// ======================
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
-  if (!user) return res.status(400).json({ message: "User not found" });
+    // 1. Check user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch)
-    return res.status(400).json({ message: "Invalid credentials" });
+    // 2. Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
 
-  const token = jwt.sign(
-    { id: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: "1d" }
-  );
+    // 3. Create JWT token
+    const token = jwt.sign(
+      { id: user._id },
+      "secretkey", // you can later move this to .env
+      { expiresIn: "1d" }
+    );
 
-  res.json({ token, user });
+    // 4. Send response
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
+
 
 module.exports = router;

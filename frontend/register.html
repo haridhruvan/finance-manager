@@ -74,38 +74,38 @@
     <p>Already have an account? <a href="login.html">Login</a></p>
   </div>
 
-  <script>
-    document.getElementById("registerForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+<script>
+  const API = "https://finance-manager-api-bg2w.onrender.com";
 
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+  document.querySelector("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      try {
-        const res = await fetch("http://localhost:5000/api/users/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, email, password }),
-        });
+    const name = document.querySelectorAll("input")[0].value;
+    const email = document.querySelectorAll("input")[1].value;
+    const password = document.querySelectorAll("input")[2].value;
 
-        const data = await res.json();
-        console.log(data);
+    try {
+      const res = await fetch(`${API}/api/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-        if (data._id) {
-          alert("Registered successfully ✅");
-          window.location.href = "login.html";
-        } else {
-          alert(data.message);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Error connecting to server");
+      const data = await res.json();
+
+      if (data._id) {
+        alert("Registered successfully ✅");
+        window.location.href = "index.html";
+      } else {
+        alert(data.message);
       }
-    });
-  </script>
+    } catch (err) {
+      alert("Error connecting to server");
+    }
+  });
+</script>
 
 </body>
 </html>
