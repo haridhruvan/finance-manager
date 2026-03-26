@@ -1,141 +1,144 @@
-// =======================
-// RUN AFTER PAGE LOAD
-// =======================
-document.addEventListener("DOMContentLoaded", () => {
+// 🌐 LIVE BACKEND API
+const API = "https://finance-manager-api-bg2w.onrender.com";
 
-  // =======================
-  // LOGIN
-  // =======================
-  const loginForm = document.getElementById("loginForm");
+// 🔐 TOKEN STORAGE
+let token = localStorage.getItem("token");
 
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+// ================= REGISTER =================
+const registerForm = document.getElementById("registerForm");
 
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+if (registerForm) {
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      try {
-        const res = await fetch("http://localhost:5000/api/users/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-        const data = await res.json();
-
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-          alert("Login successful ✅");
-          window.location.href = "dashboard.html";
-        } else {
-          alert(data.message);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Login error");
-      }
+    const res = await fetch(`${API}/api/users/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
     });
-  }
 
-  // =======================
-  // REGISTER
-  // =======================
-  const registerForm = document.getElementById("registerForm");
+    const data = await res.json();
+    alert(data.message);
 
-  if (registerForm) {
-    registerForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    if (res.ok) {
+      window.location.href = "login.html";
+    }
+  });
+}
 
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+// ================= LOGIN =================
+const loginForm = document.getElementById("loginForm");
 
-      try {
-        const res = await fetch("http://localhost:5000/api/users/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, email, password }),
-        });
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const data = await res.json();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-        if (data._id) {
-          alert("Registered successfully ✅");
-          window.location.href = "login.html";
-        } else {
-          alert(data.message);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Register error");
-      }
+    const res = await fetch(`${API}/api/users/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
     });
-  }
 
-});
+    const data = await res.json();
 
+    if (res.ok) {
+      localStorage.setItem("token", data.token);
+      window.location.href = "dashboard.html";
+    } else {
+      alert(data.message);
+    }
+  });
+}
 
-// =======================
-// DASHBOARD FUNCTIONS
-// =======================
+// ================= LOAD EXPENSES =================
+async function loadExpenses() {
+  const list = document.getElementById("expenseList");
+  if (!list) return;
 
- // ADD EXPENSE
-function addExpense() {
-  const name = document.getElementById("expenseName").value;
+  const res = await fetch(`${API}/api/expenses`, {
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  const data = await res.json();
+  list.innerHTML = "";
+
+  data.forEach((exp) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${exp.title} - ₹${exp.amount}
+      <button onclick="editExpense('${exp._id}', '${exp.title}', '${exp.amount}')">Edit</button>
+      <button onclick="deleteExpense('${exp._id}')">Delete</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+// ================= ADD EXPENSE =================
+async function addExpense() {
+  const title = document.getElementById("expenseName").value;
   const amount = document.getElementById("amount").value;
 
-  if (!name || !amount) {
-    alert("Enter all fields");
-    return;
-  }
+  await fetch(`${API}/api/expenses`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify({ title, amount }),
+  });
 
-  const list = document.getElementById("expenseList");
-
-  const li = document.createElement("li");
-
-  li.innerHTML = `
-    <span>${name} - ₹${amount}</span>
-    <div class="btn-group">
-      <button onclick="editExpense(this)">Edit</button>
-      <button onclick="deleteExpense(this)">Delete</button>
-    </div>
-  `;
-
-  list.appendChild(li);
-
-  document.getElementById("expenseName").value = "";
-  document.getElementById("amount").value = "";
+  loadExpenses();
 }
 
+// ================= DELETE =================
+async function deleteExpense(id) {
+  await fetch(`${API}/api/expenses/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: token,
+    },
+  });
 
-// DELETE
-function deleteExpense(btn) {
-  btn.parentElement.parentElement.remove();
+  loadExpenses();
 }
 
+// ================= EDIT =================
+async function editExpense(id, oldTitle, oldAmount) {
+  const newTitle = prompt("Edit title:", oldTitle);
+  const newAmount = prompt("Edit amount:", oldAmount);
 
-// EDIT
-function editExpense(btn) {
-  const li = btn.parentElement.parentElement;
-  const text = li.querySelector("span").innerText;
+  if (!newTitle || !newAmount) return;
 
-  const [name, amount] = text.split(" - ₹");
+  await fetch(`${API}/api/expenses/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify({ title: newTitle, amount: newAmount }),
+  });
 
-  const newName = prompt("Edit name:", name);
-  const newAmount = prompt("Edit amount:", amount);
-
-  if (newName && newAmount) {
-    li.querySelector("span").innerText = `${newName} - ₹${newAmount}`;
-  }
+  loadExpenses();
 }
 
-
-// THEME
+// ================= THEME TOGGLE =================
 function toggleTheme() {
   document.body.classList.toggle("dark");
 }
+
+// ================= AUTO LOAD =================
+window.onload = () => {
+  loadExpenses();
+};

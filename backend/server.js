@@ -6,6 +6,9 @@ const jwt = require("jsonwebtoken");
 
 const app = express();
 
+app.use(express.json());
+app.use(cors());
+
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
@@ -152,7 +155,4 @@ app.delete("/api/expenses/:id", async (req, res) => {
 // =======================
 app.listen(5000, () => {
   console.log("Server running on port 5000 🚀");
-});
-app.get("/", (req, res) => {
-  res.send("Finance Manager API is running 🚀");
 });
