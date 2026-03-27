@@ -1,43 +1,87 @@
 const express = require("express");
-const router = express.Router();
 const Expense = require("../models/expense");
 const auth = require("../middleware/auth");
 
-// ADD EXPENSE
+const router = express.Router();
+
 router.post("/", auth, async (req, res) => {
-  const { title, amount, category } = req.body;
+  try {
+    const { title, amount, category } = req.body;
 
-  const expense = new Expense({
-    userId: req.user.id,
-    title,
-    amount,
-    category,
-  });
+    if (!title || amount === undefined || amount === null || Number.isNaN(Number(amount))) {
+      return res.status(400).json({ message: "Title and a valid amount are required" });
+    }
 
-  await expense.save();
-  res.json(expense);
+    const expense = new Expense({
+      userId: req.user.id,
+      title,
+      amount: Number(amount),
+      category,
+    });
+
+    await expense.save();
+    res.status(201).json(expense);
+  } catch (error) {
+    console.error("Add expense error:", error);
+    res.status(500).json({ message: "Failed to add expense" });
+  }
 });
 
-// GET ALL EXPENSES
 router.get("/", auth, async (req, res) => {
-  const expenses = await Expense.find({ userId: req.user.id });
-  res.json(expenses);
+  try {
+    const expenses = await Expense.find({ userId: req.user.id }).sort({ date: -1 });
+    res.json(expenses);
+  } catch (error) {
+    console.error("Load expenses error:", error);
+    res.status(500).json({ message: "Failed to load expenses" });
+  }
 });
 
-// DELETE
 router.delete("/:id", auth, async (req, res) => {
-  await Expense.findByIdAndDelete(req.params.id);
-  res.json({ message: "Deleted" });
+  try {
+    const deleted = await Expense.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    res.json({ message: "Deleted" });
+  } catch (error) {
+    console.error("Delete expense error:", error);
+    res.status(500).json({ message: "Failed to delete expense" });
+  }
 });
 
-// UPDATE
 router.put("/:id", auth, async (req, res) => {
-  const updated = await Expense.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json(updated);
+  try {
+    const updates = { ...req.body };
+
+    if (updates.amount !== undefined) {
+      if (Number.isNaN(Number(updates.amount))) {
+        return res.status(400).json({ message: "Amount must be a number" });
+      }
+
+      updates.amount = Number(updates.amount);
+    }
+
+    const updated = await Expense.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.id },
+      updates,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    res.json(updated);
+  } catch (error) {
+    console.error("Update expense error:", error);
+    res.status(500).json({ message: "Failed to update expense" });
+  }
 });
 
 module.exports = router;

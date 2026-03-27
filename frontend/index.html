@@ -1,24 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Finance Manager - Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>💰 Dashboard</h2>
+<div class="dashboard">
+  <h2>Finance Dashboard</h2>
 
-<button onclick="logout()">Logout</button>
+  <button onclick="logout()">Logout</button>
 
-<br><br>
+  <br><br>
 
-<input type="text" id="expenseName" placeholder="Expense Name" />
-<input type="number" id="amount" placeholder="Amount" />
+  <input type="text" id="expenseName" placeholder="Expense Name">
+  <input type="number" id="amount" placeholder="Amount">
 
-<button onclick="addExpense()">Add Expense</button>
+  <button onclick="addExpense()">Add Expense</button>
 
-<h3>📜 Expenses</h3>
-<ul id="expenseList"></ul>
+  <h3>Expenses</h3>
+  <ul id="expenseList"></ul>
+</div>
 
+<script src="config.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

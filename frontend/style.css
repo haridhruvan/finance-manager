@@ -1,86 +1,66 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-
-  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-              url("https://images.unsplash.com/photo-1526304640581-d334cdbbf45e");
-
-  background-size: cover;
-  background-position: center;
+  font-family: Arial;
+  background: linear-gradient(to right, #1e1e2f, #2c2c54);
   color: white;
 }
 
-
-/* 🔹 MAIN CARD */
 .container {
   width: 320px;
-  margin: 80px auto;
+  margin: 100px auto;
   padding: 25px;
-
   background: rgba(255,255,255,0.1);
   border-radius: 12px;
-
   backdrop-filter: blur(10px);
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-
   text-align: center;
 }
 
+h2 {
+  margin-bottom: 20px;
+}
 
-/* 🔹 INPUTS */
 input {
-  width: 90%;
+  width: 100%;
   padding: 10px;
   margin: 10px 0;
-
-  border-radius: 6px;
   border: none;
+  border-radius: 6px;
   outline: none;
 }
 
-
-/* 🔹 BUTTONS */
 button {
-  width: 95%;
+  width: 100%;
   padding: 10px;
-  margin: 8px 0;
-
-  border: none;
-  border-radius: 6px;
-
   background: #00adb5;
+  border: none;
   color: white;
-
+  border-radius: 6px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 button:hover {
   background: #019ca3;
 }
 
+a {
+  color: #00adb5;
+  text-decoration: none;
+}
 
-/* 🔹 LIST */
+.dashboard {
+  width: 400px;
+  margin: 50px auto;
+  text-align: center;
+}
+
 ul {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
 }
 
 li {
   background: rgba(255,255,255,0.1);
-  margin: 8px 0;
+  margin: 10px 0;
   padding: 10px;
-
   border-radius: 6px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-
-/* 🔹 DARK MODE */
-.dark {
-  background: #121212 !important;
 }

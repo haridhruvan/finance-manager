@@ -1,199 +1,149 @@
-// 🌐 BACKEND API
-const API = "https://finance-manager-api-bg2w.onrender.com";
+const API =
+  window.APP_CONFIG?.API_BASE_URL ||
+  (window.location.protocol === "file:"
+    ? "http://localhost:5000"
+    : `${window.location.protocol}//${window.location.hostname}:5000`);
 
-// 🔐 TOKEN
 let token = localStorage.getItem("token");
 
+async function parseResponse(res) {
+  let data = null;
 
-// ================= WAKE SERVER (Render Fix) =================
-async function wakeServer() {
   try {
-    await fetch(API);
-  } catch (err) {
-    console.log("Waking server...");
+    data = await res.json();
+  } catch (error) {
+    data = null;
   }
+
+  if (!res.ok) {
+    throw new Error(data?.message || "Request failed");
+  }
+
+  return data;
 }
 
-
-// ================= REGISTER =================
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
     try {
-      await wakeServer(); // 🔥 important
-
       const res = await fetch(`${API}/api/users/register`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        alert("Registered successfully ✅");
-        window.location.href = "login.html";
-      } else {
-        alert(data.message || "Registration failed ❌");
-      }
-
-    } catch (err) {
-      console.error(err);
-      alert("Server not reachable ❌");
+      await parseResponse(res);
+      alert("Registered successfully");
+      window.location.href = "login.html";
+    } catch (error) {
+      alert(error.message);
     }
   });
 }
 
-
-// ================= LOGIN =================
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
-  // 🔥 If already logged in, skip login page
-  if (token) {
-    window.location.href = "index.html";
-  }
-
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
     try {
-      await wakeServer(); // 🔥 important
-
       const res = await fetch(`${API}/api/users/login`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
-        alert("Login successful ✅");
-        window.location.href = "index.html";
-      } else {
-        alert(data.message || "Login failed ❌");
-      }
-
-    } catch (err) {
-      console.error(err);
-      alert("Server not reachable ❌");
+      const data = await parseResponse(res);
+      localStorage.setItem("token", data.token);
+      token = data.token;
+      window.location.href = "index.html";
+    } catch (error) {
+      alert(error.message);
     }
   });
 }
 
-
-// ================= PROTECT DASHBOARD =================
-if (window.location.pathname.includes("index.html")) {
-  if (!token) {
-    alert("Please login first ❌");
-    window.location.href = "login.html";
-  }
+if (window.location.pathname.includes("index.html") && !token) {
+  window.location.href = "login.html";
 }
 
-
-// ================= LOAD EXPENSES =================
 async function loadExpenses() {
   const list = document.getElementById("expenseList");
-  if (!list) return;
-
-  try {
-    const res = await fetch(`${API}/api/expenses`, {
-      headers: {
-        Authorization: token
-      }
-    });
-
-    const data = await res.json();
-    list.innerHTML = "";
-
-    data.forEach((exp) => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        ${exp.title} - ₹${exp.amount}
-        <button onclick="deleteExpense('${exp._id}')">Delete</button>
-      `;
-      list.appendChild(li);
-    });
-
-  } catch (err) {
-    console.error("Load error:", err);
-  }
-}
-
-
-// ================= ADD EXPENSE =================
-async function addExpense() {
-  const title = document.getElementById("expenseName").value;
-  const amount = document.getElementById("amount").value;
-
-  if (!title || !amount) {
-    alert("Enter all fields ❗");
+  if (!list || !token) {
     return;
   }
 
   try {
-    await fetch(`${API}/api/expenses`, {
+    const res = await fetch(`${API}/api/expenses`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await parseResponse(res);
+    list.innerHTML = "";
+
+    data.forEach((expense) => {
+      const li = document.createElement("li");
+      li.textContent = `${expense.title} - Rs ${expense.amount}`;
+      list.appendChild(li);
+    });
+  } catch (error) {
+    list.innerHTML = `<li>${error.message}</li>`;
+  }
+}
+
+async function addExpense() {
+  const titleInput = document.getElementById("expenseName");
+  const amountInput = document.getElementById("amount");
+  const title = titleInput.value.trim();
+  const amount = amountInput.value;
+
+  if (!title || !amount) {
+    alert("Enter both expense name and amount");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/api/expenses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: token
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ title, amount })
+      body: JSON.stringify({ title, amount }),
     });
 
-    document.getElementById("expenseName").value = "";
-    document.getElementById("amount").value = "";
-
-    loadExpenses();
-
-  } catch (err) {
-    console.error("Add error:", err);
+    await parseResponse(res);
+    titleInput.value = "";
+    amountInput.value = "";
+    await loadExpenses();
+  } catch (error) {
+    alert(error.message);
   }
 }
 
-
-// ================= DELETE =================
-async function deleteExpense(id) {
-  try {
-    await fetch(`${API}/api/expenses/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: token
-      }
-    });
-
-    loadExpenses();
-
-  } catch (err) {
-    console.error("Delete error:", err);
-  }
-}
-
-
-// ================= LOGOUT =================
 function logout() {
   localStorage.removeItem("token");
+  token = null;
   window.location.href = "login.html";
 }
 
-
-// ================= AUTO LOAD =================
 window.onload = () => {
   loadExpenses();
 };

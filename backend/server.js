@@ -1,61 +1,46 @@
-// ======================
-// 📦 IMPORTS
-// ======================
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+
 require("dotenv").config();
 
-const userRoutes = require("./routes/userRoutes"); // ✅ correct path
+const userRoutes = require("./routes/userRoutes");
+const expenseRoutes = require("./routes/expenseRoutes");
 
 const app = express();
 
-
-// ======================
-// 🟢 MIDDLEWARE
-// ======================
-app.use(cors({
-  origin: "*", // allow all (you can restrict later)
-}));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(express.json());
 
-
-// ======================
-// 🔵 ROUTES
-// ======================
 app.use("/api/users", userRoutes);
+app.use("/api/expenses", expenseRoutes);
 
-
-// ======================
-// 🟡 ROOT TEST ROUTE
-// ======================
 app.get("/", (req, res) => {
-  res.send("Finance Manager API is running 🚀");
+  res.send("Finance Manager API is running");
 });
 
-
-// ======================
-// 🔴 DATABASE CONNECTION
-// ======================
 const MONGO_URI = process.env.MONGO_URI;
 
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log("✅ MongoDB Connected");
-})
-.catch((err) => {
-  console.error("❌ MongoDB Error:", err);
-});
+if (!MONGO_URI || MONGO_URI === "your_mongodb_connection_string") {
+  console.error("MONGO_URI is missing or still using the placeholder in backend/.env");
+  process.exit(1);
+}
 
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error);
+  });
 
-// ======================
-// 🚀 START SERVER
-// ======================
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
