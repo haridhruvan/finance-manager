@@ -3,28 +3,277 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
+  <title>Vault Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="vault-body">
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-btn" type="button" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="brand-inline">Vault</div>
+      <div class="topbar-actions">
+        <button class="icon-circle" type="button" aria-label="Notifications">!</button>
+        <div class="avatar-chip">HK</div>
+      </div>
+    </header>
 
-<div class="dashboard">
-  <h2>Finance Dashboard</h2>
+    <main class="app-content">
+      <section class="screen screen-active" data-screen="dashboard">
+        <div class="hero-card">
+          <div class="eyebrow">Available liquidity</div>
+          <div class="hero-row">
+            <div>
+              <h1 id="liquidityTotal">₹0.00</h1>
+              <div class="hero-meta">
+                <div>
+                  <span>Monthly yield</span>
+                  <strong>+4.2%</strong>
+                </div>
+                <div>
+                  <span>Vault tier</span>
+                  <strong>Black Diamond</strong>
+                </div>
+              </div>
+            </div>
+            <div class="diamond-mark"></div>
+          </div>
+        </div>
 
-  <button onclick="logout()">Logout</button>
+        <div class="metric-grid">
+          <article class="metric-card">
+            <div class="eyebrow">Monthly spending</div>
+            <div class="metric-value" id="monthlySpending">₹0.00</div>
+            <p id="spendingDelta">Ready for your first transaction.</p>
+          </article>
+          <article class="metric-card">
+            <div class="eyebrow">Savings insight</div>
+            <p id="savingsInsight">Add a few expenses and Vault will surface insights here.</p>
+          </article>
+        </div>
 
-  <br><br>
+        <section class="panel chart-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Spending Trends</h2>
+              <p>Weekly cash movement snapshot</p>
+            </div>
+            <div class="pill-group">
+              <button class="pill active" type="button">W</button>
+              <button class="pill" type="button">M</button>
+              <button class="pill" type="button">Y</button>
+            </div>
+          </div>
+          <div class="bar-chart" id="trendChart">
+            <div class="bar-col"><span class="bar" style="height: 24%"></span><label>Mon</label></div>
+            <div class="bar-col"><span class="bar" style="height: 46%"></span><label>Tue</label></div>
+            <div class="bar-col"><span class="bar active" style="height: 68%"></span><label>Wed</label></div>
+            <div class="bar-col"><span class="bar" style="height: 29%"></span><label>Thu</label></div>
+            <div class="bar-col"><span class="bar" style="height: 55%"></span><label>Fri</label></div>
+            <div class="bar-col"><span class="bar active" style="height: 82%"></span><label>Sat</label></div>
+            <div class="bar-col"><span class="bar" style="height: 18%"></span><label>Sun</label></div>
+          </div>
+        </section>
 
-  <input type="text" id="expenseName" placeholder="Expense Name">
-  <input type="number" id="amount" placeholder="Amount">
+        <section class="panel categories-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Categories</h2>
+              <p>Where your money is moving</p>
+            </div>
+          </div>
+          <div class="ring-layout">
+            <div class="ring-chart">
+              <div class="ring-hole">
+                <span>Top</span>
+                <strong id="topCategory">Leisure</strong>
+              </div>
+            </div>
+            <div class="category-list" id="categoryList">
+              <div class="category-row">
+                <span class="dot dot-blue"></span>
+                <span>Dining</span>
+                <strong>₹0</strong>
+              </div>
+              <div class="category-row">
+                <span class="dot dot-white"></span>
+                <span>Shopping</span>
+                <strong>₹0</strong>
+              </div>
+              <div class="category-row">
+                <span class="dot dot-muted"></span>
+                <span>Utility</span>
+                <strong>₹0</strong>
+              </div>
+            </div>
+          </div>
+        </section>
 
-  <button onclick="addExpense()">Add Expense</button>
+        <section class="panel transactions-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Recent Transactions</h2>
+              <p>Live expense feed</p>
+            </div>
+            <button class="link-btn" type="button" data-nav-target="analytics">View all</button>
+          </div>
+          <div class="transaction-list" id="expenseList"></div>
+        </section>
+      </section>
 
-  <h3>Expenses</h3>
-  <ul id="expenseList"></ul>
-</div>
+      <section class="screen" data-screen="analytics">
+        <div class="section-title">
+          <div class="eyebrow">Performance overview</div>
+          <h1>Spending Analytics</h1>
+        </div>
 
-<script src="config.js"></script>
-<script src="script.js"></script>
+        <section class="panel chart-panel tall">
+          <div class="panel-header">
+            <div>
+              <h2>Cash Flow Trend</h2>
+              <p>Comparing spending vs income for this cycle</p>
+            </div>
+            <div class="legend">
+              <span><i class="legend-dot blue"></i> Spending</span>
+              <span><i class="legend-dot muted"></i> Income</span>
+            </div>
+          </div>
+          <div class="bar-chart analytics-chart">
+            <div class="bar-col dual"><span class="bar muted" style="height: 35%"></span><span class="bar active" style="height: 28%"></span><label>Jul</label></div>
+            <div class="bar-col dual"><span class="bar muted" style="height: 48%"></span><span class="bar active" style="height: 42%"></span><label>Aug</label></div>
+            <div class="bar-col dual"><span class="bar muted" style="height: 60%"></span><span class="bar active" style="height: 0%"></span><label>Sep</label></div>
+            <div class="bar-col dual"><span class="bar muted" style="height: 44%"></span><span class="bar active" style="height: 31%"></span><label>Oct</label></div>
+            <div class="bar-col dual"><span class="bar muted" style="height: 78%"></span><span class="bar active" style="height: 56%"></span><label>Nov</label></div>
+            <div class="bar-col dual"><span class="bar muted" style="height: 54%"></span><span class="bar active" style="height: 38%"></span><label>Dec</label></div>
+          </div>
+        </section>
+
+        <section class="panel alert-panel">
+          <div class="badge">Alert</div>
+          <h2 id="analyticsHeadline">You spent 0% more this month.</h2>
+          <p id="analyticsCopy">Once your expenses are loaded, Vault will compare the latest entries and show patterns here.</p>
+          <button class="cta-btn" type="button" data-nav-target="add">Optimize Budget</button>
+        </section>
+
+        <section class="panel breakdown-panel">
+          <h2>Category Breakdown</h2>
+          <div id="analyticsCategories">
+            <div class="breakdown-row"><span>Housing & Rent</span><strong>₹0.00</strong><div class="progress"><span style="width: 0%"></span></div></div>
+            <div class="breakdown-row"><span>Dining & Groceries</span><strong>₹0.00</strong><div class="progress"><span style="width: 0%"></span></div></div>
+            <div class="breakdown-row"><span>Entertainment</span><strong>₹0.00</strong><div class="progress"><span style="width: 0%"></span></div></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="screen" data-screen="settings">
+        <div class="section-title">
+          <div class="eyebrow">Identity & profile</div>
+          <h1>Settings</h1>
+          <p>Manage your private vault security and preferences.</p>
+        </div>
+
+        <section class="panel profile-panel">
+          <div class="profile-avatar">HK</div>
+          <label class="vault-label" for="profileName">Display name</label>
+          <input class="vault-input" id="profileName" type="text" value="Harini Kumar">
+          <label class="vault-label" for="profileVaultId">Vault ID</label>
+          <input class="vault-input" id="profileVaultId" type="text" value="HK-882-PRIVATE" readonly>
+          <label class="vault-label" for="profileEmail">Email address</label>
+          <input class="vault-input" id="profileEmail" type="email" value="harini@vault.local">
+        </section>
+
+        <section class="settings-stack">
+          <div class="setting-card">
+            <div>
+              <strong>Biometric Unlock</strong>
+              <span>Use FaceID or TouchID</span>
+            </div>
+            <label class="switch"><input type="checkbox" checked><span></span></label>
+          </div>
+          <div class="setting-card">
+            <div>
+              <strong>Ghost Mode</strong>
+              <span>Hide balances on launch</span>
+            </div>
+            <label class="switch"><input type="checkbox"><span></span></label>
+          </div>
+          <div class="setting-card">
+            <div>
+              <strong>Expense Alerts</strong>
+              <span>Notify when transactions exceed your comfort range</span>
+            </div>
+            <label class="switch"><input type="checkbox" checked><span></span></label>
+          </div>
+        </section>
+
+        <section class="danger-panel">
+          <h2>Delete Vault Account</h2>
+          <p>Once deleted, all history will be permanently removed.</p>
+          <button class="danger-btn" type="button" onclick="logout()">Log Out & Clear Session</button>
+        </section>
+      </section>
+    </main>
+
+    <div class="modal-backdrop hidden" id="expenseModal">
+      <section class="expense-modal">
+        <div class="panel-header">
+          <div>
+            <div class="eyebrow">Transaction</div>
+            <h2>Add Expense</h2>
+          </div>
+          <button class="close-btn" type="button" id="closeExpenseModal">X</button>
+        </div>
+
+        <label class="vault-label" for="expenseName">Expense title</label>
+        <input class="vault-input" type="text" id="expenseName" placeholder="What did you spend on?">
+
+        <label class="vault-label" for="amount">Amount</label>
+        <input class="vault-input amount-input" type="number" id="amount" placeholder="0.00">
+
+        <label class="vault-label" for="expenseCategory">Category</label>
+        <select class="vault-input" id="expenseCategory">
+          <option value="Dining">Dining</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Utility">Utility</option>
+          <option value="Travel">Travel</option>
+          <option value="Health">Health</option>
+          <option value="Food">Food</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <input type="hidden" id="expenseId">
+
+        <div class="modal-actions">
+          <button class="ghost-btn hidden" type="button" id="deleteExpenseButton">Delete</button>
+          <button class="primary-gradient-btn" type="button" id="saveExpenseButton" onclick="saveExpense()">Save Transaction</button>
+        </div>
+        <p class="modal-note">Secured by Vault Cloud Encryption</p>
+      </section>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" type="button" data-nav-target="dashboard">
+        <span class="nav-ico grid"></span>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-btn" type="button" data-nav-target="analytics">
+        <span class="nav-ico trend"></span>
+        <span>Analytics</span>
+      </button>
+      <button class="nav-btn nav-btn-primary" type="button" data-nav-target="add">
+        <span class="plus">+</span>
+      </button>
+      <button class="nav-btn" type="button" data-nav-target="settings">
+        <span class="nav-ico gear"></span>
+        <span>Settings</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -3,24 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Vault Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="vault-body auth-body">
+  <main class="auth-shell">
+    <section class="auth-hero">
+      <div class="vault-mark">
+        <div class="vault-mark-inner"></div>
+      </div>
+      <h1>VAULT</h1>
+      <p>The digital architecture of wealth.</p>
+    </section>
 
-<div class="container">
-  <h2>Login</h2>
+    <section class="auth-panel">
+      <div class="auth-tabs">
+        <a class="auth-tab active" href="login.html">Log In</a>
+        <a class="auth-tab" href="register.html">Sign Up</a>
+      </div>
 
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button type="submit">Login</button>
-  </form>
+      <form id="loginForm" class="vault-form">
+        <label class="vault-label" for="email">Email address</label>
+        <div class="input-wrap">
+          <span class="input-icon">@</span>
+          <input class="vault-input" type="email" id="email" placeholder="name@privatevault.com" required>
+        </div>
 
-  <p>Don't have an account? <a href="register.html">Register</a></p>
-</div>
+        <div class="label-row">
+          <label class="vault-label" for="password">Security key</label>
+          <span class="recovery-text">Recovery</span>
+        </div>
+        <div class="input-wrap">
+          <span class="input-icon">#</span>
+          <input class="vault-input" type="password" id="password" placeholder="Enter your security key" required>
+        </div>
 
-<script src="config.js"></script>
-<script src="script.js"></script>
+        <button class="primary-gradient-btn" type="submit">Enter Vault</button>
+      </form>
+
+      <div class="divider-line"><span>Secure identity</span></div>
+      <div class="provider-grid">
+        <button class="provider-btn" type="button">Google</button>
+        <button class="provider-btn" type="button">Apple</button>
+      </div>
+    </section>
+
+    <footer class="auth-footer">
+      <p>Protected by 256-bit AES encryption & biometric protocols.</p>
+      <div class="footer-links">
+        <a href="login.html">Privacy</a>
+        <a href="login.html">Terms</a>
+        <a href="register.html">Support</a>
+      </div>
+    </footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

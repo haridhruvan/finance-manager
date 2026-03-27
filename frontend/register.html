@@ -3,25 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register</title>
+  <title>Vault Sign Up</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="vault-body auth-body">
+  <main class="auth-shell">
+    <section class="auth-hero">
+      <div class="vault-mark">
+        <div class="vault-mark-inner"></div>
+      </div>
+      <h1>VAULT</h1>
+      <p>The digital architecture of wealth.</p>
+    </section>
 
-<div class="container">
-  <h2>Register</h2>
+    <section class="auth-panel">
+      <div class="auth-tabs">
+        <a class="auth-tab" href="login.html">Log In</a>
+        <a class="auth-tab active" href="register.html">Sign Up</a>
+      </div>
 
-  <form id="registerForm">
-    <input type="text" id="name" placeholder="Name" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button type="submit">Register</button>
-  </form>
+      <form id="registerForm" class="vault-form">
+        <label class="vault-label" for="name">Vault holder</label>
+        <div class="input-wrap">
+          <span class="input-icon">U</span>
+          <input class="vault-input" type="text" id="name" placeholder="Enter your display name" required>
+        </div>
 
-  <p>Already have account? <a href="login.html">Login</a></p>
-</div>
+        <label class="vault-label" for="email">Email address</label>
+        <div class="input-wrap">
+          <span class="input-icon">@</span>
+          <input class="vault-input" type="email" id="email" placeholder="name@privatevault.com" required>
+        </div>
 
-<script src="config.js"></script>
-<script src="script.js"></script>
+        <label class="vault-label" for="password">Security key</label>
+        <div class="input-wrap">
+          <span class="input-icon">#</span>
+          <input class="vault-input" type="password" id="password" placeholder="Create a strong password" required>
+        </div>
+
+        <button class="primary-gradient-btn" type="submit">Create Vault</button>
+      </form>
+
+      <div class="divider-line"><span>Already secured?</span></div>
+      <div class="provider-grid single">
+        <a class="provider-btn link-provider" href="login.html">Return to Log In</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
